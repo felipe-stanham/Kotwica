@@ -13,6 +13,7 @@ from fastapi import FastAPI
 from kotwica import config as config_module
 from kotwica import health, ui_api
 from kotwica.config import Config, ConfigError
+from kotwica.host_watch import make_watch_job
 from kotwica.scheduler import Job, Scheduler
 from kotwica.state import StateStore
 
@@ -92,7 +93,7 @@ def main(argv=None) -> int:
         "Kotwica starting: env=%s port=%d managed_record=%s",
         config.env, config.port, config.managed_record,
     )
-    app = create_app(config, store, stamp_job(store, "last_sync_at"), stamp_job(store, "last_watch_at"))
+    app = create_app(config, store, stamp_job(store, "last_sync_at"), make_watch_job(config, store))
     # uvicorn re-raises a captured SIGTERM after its graceful shutdown; with the default handler
     # that would kill the process with -15 instead of exit code 0.
     signal.signal(signal.SIGTERM, lambda *_: None)
