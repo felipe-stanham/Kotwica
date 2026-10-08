@@ -1,0 +1,4 @@
+.env
+.deploy-secrets
+docs/local/
+.DS_Store
