@@ -51,8 +51,11 @@ def _matches(state: State, config: Config, now: float) -> List[Tuple[str, str]]:
     grace = _in_grace(state, now)
     for h in hosts:
         if h.dns_status == "wrong" and not grace:
-            wrong = next((a for r in h.resolutions if r.result == "mismatch" for a in r.answer), "?")
-            add("error", "%s resolves to %s, expected %s" % (h.hostname, wrong, state.public_ip))
+            answer = next((a for r in h.resolutions if r.result == "mismatch" for a in r.answer), None)
+            if answer:
+                add("error", "%s resolves to %s, expected %s" % (h.hostname, answer, state.public_ip))
+            else:
+                add("error", "%s has no A record, expected %s" % (h.hostname, state.public_ip))
     for h in hosts:
         if h.cert_status == "valid" and h.days_left is not None and ERROR_DAYS < h.days_left <= WARNING_DAYS:
             add("warning", "%s:%d cert expires in %d days" % (h.hostname, h.port, h.days_left))
