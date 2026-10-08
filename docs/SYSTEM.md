@@ -55,4 +55,4 @@ Kotwica is a Latarnia Service App that runs on the Raspberry Pi (`homeserver`). 
 
 ## Current State
 
-P-0001 (Kotwica v1) is being built scope by scope. Scope 1 delivers the app skeleton: Manifest, config, state store, scheduler and a placeholder `/health`.
+P-0001 (Kotwica v1) is being built scope by scope. Done: app skeleton, Health Rules and Latarnia UI resources. Pending: record sync (GoDaddy) and host watch (DNS and TLS) jobs.

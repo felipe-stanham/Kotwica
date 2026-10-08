@@ -42,13 +42,12 @@ def test_no_reserved_routes():
     from kotwica.config import load
 
     cfg = load(environ={"ENV": "dev"})
-    from fastapi.routing import APIRoute
-
-    routes = app_module.create_app(cfg, None, None, None).routes
-    assert not [r.path for r in routes if r.path.startswith("/b/")]
-    # /docs and /openapi.json may only be FastAPI's own (plain Starlette routes), never app-defined APIRoutes
-    reserved = [r for r in routes if r.path.startswith("/docs") or r.path == "/openapi.json"]
-    assert reserved and not [r for r in reserved if isinstance(r, APIRoute)]
+    app = app_module.create_app(cfg, None, None, None)
+    # openapi lists every app-defined route; FastAPI's own /docs and /openapi.json are not in it
+    defined = list(app.openapi()["paths"])
+    assert "/health" in defined
+    assert not [p for p in defined if p.startswith("/b/") or p.startswith("/docs") or p == "/openapi.json"]
+    assert not [r.path for r in app.routes if getattr(r, "path", "").startswith("/b/")]
 
 
 def test_guard_home_outside_prod_exits_nonzero(app_process, tmp_path):
