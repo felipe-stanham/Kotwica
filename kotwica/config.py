@@ -1,6 +1,7 @@
 """Environment config: process env > .env > committed per-env defaults."""
 import logging
 import os
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import List, Mapping, Optional, Tuple
@@ -11,6 +12,7 @@ log = logging.getLogger(__name__)
 
 TOKEN_KEY = "GODADDY_API_TOKEN"
 SINGLE_WRITER_RECORD = "home"
+RECORD_NAME = re.compile(r"^[a-z0-9]([a-z0-9-]*[a-z0-9])?$")
 ENV_ALIASES = {"dev": "dev", "tst": "tst", "prd": "prod", "prod": "prod"}
 PREFIXES = {"dev": "DEV_", "tst": "TST_", "prod": "PROD_"}
 
@@ -117,13 +119,19 @@ def load(
     if log_level not in ("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"):
         raise ConfigError("invalid LOG_LEVEL %r" % log_level)
 
-    token = environ.get(TOKEN_KEY) or dotenv.get(prefix + TOKEN_KEY) or None
+    token = (environ.get(TOKEN_KEY) or dotenv.get(prefix + TOKEN_KEY) or "").strip() or None
 
+    if managed_record is not None and not RECORD_NAME.match(managed_record):
+        raise ConfigError("invalid Managed Record name %r (single DNS label expected)" % managed_record)
     if managed_record == SINGLE_WRITER_RECORD and env != "prod":
         raise ConfigError(
             "single-writer guard: Managed Record %r may only be configured when ENV=prod (ENV=%s)"
             % (SINGLE_WRITER_RECORD, env)
         )
+
+    echo_urls = _split(text("IP_ECHO_URLS", ",".join(SHARED_DEFAULTS["ip_echo_urls"])))
+    if len(echo_urls) < 2:
+        raise ConfigError("at least two IP echo services are required (they must agree)")
 
     return Config(
         env=env,
@@ -132,7 +140,7 @@ def load(
         ttl=SHARED_DEFAULTS["ttl"],
         watched_hosts=parse_hosts(text("WATCHED_HOSTS", SHARED_DEFAULTS["watched_hosts"])),
         resolvers=_split(text("RESOLVERS", ",".join(SHARED_DEFAULTS["resolvers"]))),
-        ip_echo_urls=_split(text("IP_ECHO_URLS", ",".join(SHARED_DEFAULTS["ip_echo_urls"]))),
+        ip_echo_urls=echo_urls,
         tls_connect_host=tls_connect_host,
         sync_interval_s=sync_interval_s,
         watch_interval_s=watch_interval_s,

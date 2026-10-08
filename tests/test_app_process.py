@@ -86,7 +86,9 @@ def test_corrupt_state_recovers(app_process, tmp_path):
 
 
 def test_token_never_logged_at_debug(app_process):
-    p = app_process(env={"GODADDY_API_TOKEN": "gd_pat_SENTINEL123"})
+    # The record-sync path with a token is covered in-process (test_record_sync); here the real process runs
+    # its sync cycle without a Managed Record so no request ever reaches the real GoDaddy API.
+    p = app_process(env={"GODADDY_API_TOKEN": "gd_pat_SENTINEL123", "DEV_MANAGED_RECORD": "none"})
     p.wait_ready(5)
     time.sleep(1)  # let the first cycles run
     p.terminate(5)
