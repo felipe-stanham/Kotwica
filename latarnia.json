@@ -1,0 +1,15 @@
+{
+  "name": "kotwica",
+  "version": "0.1.0",
+  "description": "Keeps home.stanham.com pointing at the home Public IP via GoDaddy and watches DNS and TLS certificates of the home hosts.",
+  "author": "Felipe Stanham",
+  "type": "service",
+  "main_file": "app.py",
+  "config": {
+    "data_dir": true,
+    "auto_start": true,
+    "restart_policy": "on-failure",
+    "has_UI": true,
+    "requires_secrets": ["GODADDY_API_TOKEN"]
+  }
+}
