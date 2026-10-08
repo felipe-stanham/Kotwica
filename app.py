@@ -11,6 +11,7 @@ import uvicorn
 from fastapi import FastAPI
 
 from kotwica import config as config_module
+from kotwica import health, ui_api
 from kotwica.config import Config, ConfigError
 from kotwica.scheduler import Job, Scheduler
 from kotwica.state import StateStore
@@ -52,8 +53,10 @@ def create_app(config: Config, store: StateStore, sync_job: Job, watch_job: Job)
     app = FastAPI(title="Kotwica", lifespan=lifespan)
 
     @app.get("/health")
-    async def health():
-        return {"health": "warning", "message": "Starting: checks not completed yet"}
+    async def health_check():
+        return health.evaluate(store.state, config, time.time())
+
+    app.include_router(ui_api.build_router(config, store))
 
     return app
 
