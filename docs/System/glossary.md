@@ -8,10 +8,19 @@ Keep this file under ~200 lines. If it grows beyond that, push project-specific 
 
 ## Domain Terms
 
+### Managed Record
+
+**Definition:** The single DNS A record that Kotwica is allowed to write. Kotwica keeps it pointing at the current Public IP and never touches any other record in the zone.
+**Not to be confused with:** Watched Host — a Watched Host is checked from the outside view; the Managed Record is the one record Kotwica changes.
+
 ### Public IP
 
 **Definition:** The IPv4 address the internet sees for the home connection where the Pi runs. It is assigned by the ISP and changes without notice.
 **Not to be confused with:** The Pi's local (LAN) address, which never appears in public DNS.
+
+### Record Update
+
+**Definition:** A change Kotwica writes to the Managed Record (its IP or its TTL). Each Record Update is kept in Kotwica's history with its outcome.
 
 ### Watched Host
 

@@ -12,13 +12,14 @@ A pitch ends in one of three ways: promoted to a Task, promoted to a Project, or
 
 <!-- Pitches still being shaped or awaiting promotion decision. -->
 
-- [I-0001](I-0001.md) — Home DDNS + Cert Watch — [READY FOR PROMOTION] Latarnia Service App that keeps home.stanham.com's A record current at GoDaddy and watches DNS/TLS health via /health — 2026-10-08
 
 ---
 
 ## Promoted
 
 <!-- Pitches that became Tasks or Projects. Mark each entry [PROMOTED → T-xxxx] or [PROMOTED → P-xxxx]. -->
+
+- [I-0001](I-0001.md) — Home DDNS + Cert Watch — [PROMOTED → P-0001] Latarnia Service App that keeps home.stanham.com's A record current at GoDaddy and watches DNS/TLS health via /health — 2026-10-08
 
 ---
 
