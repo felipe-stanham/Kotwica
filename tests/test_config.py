@@ -83,3 +83,16 @@ def test_invalid_log_level_and_hosts_rejected(tmp_path):
         cfg.load(environ={"ENV": "dev"}, dotenv_path=write_env(tmp_path, "DEV_WATCHED_HOSTS=a.example.com:99999\n"))
     with pytest.raises(cfg.ConfigError):
         cfg.load(environ={"ENV": "dev"}, dotenv_path=write_env(tmp_path, "DEV_WATCHED_HOSTS=\n"))
+
+
+def test_token_is_stripped():
+    assert cfg.load(environ={"ENV": "dev", "GODADDY_API_TOKEN": " tokA\n"}).godaddy_token == "tokA"
+    assert cfg.load(environ={"ENV": "dev", "GODADDY_API_TOKEN": "\n"}).godaddy_token is None
+
+
+def test_managed_record_must_be_a_single_label_and_two_echo_services_needed(tmp_path):
+    for bad in ("@", "a/b", "a.b", "-x"):
+        with pytest.raises(cfg.ConfigError):
+            cfg.load(environ={"ENV": "dev"}, dotenv_path=write_env(tmp_path, "DEV_MANAGED_RECORD=%s\n" % bad))
+    with pytest.raises(cfg.ConfigError):
+        cfg.load(environ={"ENV": "dev"}, dotenv_path=write_env(tmp_path, "DEV_IP_ECHO_URLS=https://api.ipify.org\n"))

@@ -1,5 +1,6 @@
 """Kotwica entry point: Latarnia Service App (CLI args, logging, FastAPI app, lifespan)."""
 import argparse
+import asyncio
 import logging
 import signal
 import sys
@@ -14,6 +15,7 @@ from kotwica import config as config_module
 from kotwica import health, ui_api
 from kotwica.config import Config, ConfigError
 from kotwica.host_watch import make_watch_job
+from kotwica.record_sync import make_sync_job
 from kotwica.scheduler import Job, Scheduler
 from kotwica.state import StateStore
 
@@ -30,14 +32,28 @@ def setup_logging(level: str = "INFO") -> None:
     )
 
 
-def stamp_job(store: StateStore, field_name: str) -> Job:
-    """Placeholder job: records that a cycle finished. Replaced by the real jobs in later scopes."""
+def order_jobs(sync_job: Job, watch_job: Job, wait_s: float = 30.0):
+    """The first watch cycle waits (briefly) for the first sync, so it already knows the Public IP."""
+    first_sync_done = asyncio.Event()
+    first_watch = True
 
-    async def job() -> None:
-        setattr(store.state, field_name, int(time.time()))
-        store.save()
+    async def sync() -> None:
+        try:
+            await sync_job()
+        finally:
+            first_sync_done.set()
 
-    return job
+    async def watch() -> None:
+        nonlocal first_watch
+        if first_watch:
+            first_watch = False
+            try:
+                await asyncio.wait_for(first_sync_done.wait(), wait_s)
+            except asyncio.TimeoutError:
+                log.warning("First sync did not finish in %ss; watching without a Public IP", wait_s)
+        await watch_job()
+
+    return sync, watch
 
 
 def create_app(config: Config, store: StateStore, sync_job: Job, watch_job: Job) -> FastAPI:
@@ -93,7 +109,8 @@ def main(argv=None) -> int:
         "Kotwica starting: env=%s port=%d managed_record=%s",
         config.env, config.port, config.managed_record,
     )
-    app = create_app(config, store, stamp_job(store, "last_sync_at"), make_watch_job(config, store))
+    sync_job, watch_job = order_jobs(make_sync_job(config, store), make_watch_job(config, store))
+    app = create_app(config, store, sync_job, watch_job)
     # uvicorn re-raises a captured SIGTERM after its graceful shutdown; with the default handler
     # that would kill the process with -15 instead of exit code 0.
     signal.signal(signal.SIGTERM, lambda *_: None)
