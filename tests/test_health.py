@@ -73,7 +73,7 @@ def test_row3_token_missing_only_when_record_configured():
     no_token = make_config(GODADDY_API_TOKEN="")
     result = evaluate(healthy_state(), no_token)
     assert (result["health"], result["message"]) == ("error", "GODADDY_API_TOKEN not set")
-    watch_only = make_config(ENV="tst", GODADDY_API_TOKEN="")
+    watch_only = make_config(ENV="tst", TST_MANAGED_RECORD="none", GODADDY_API_TOKEN="")
     assert evaluate(healthy_state(), watch_only)["health"] == "good"
 
 

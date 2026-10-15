@@ -14,7 +14,7 @@ classDiagram
     class Config {
         +str env  "dev | tst | prod"
         +str domain  "stanham.com"
-        +str|None managed_record  "kotwica-dev | None | home"
+        +str|None managed_record  "kotwica-dev | home-tst | home (None = watch-only override)"
         +int ttl  "600"
         +list~WatchedHost~ watched_hosts
         +list~str~ resolvers  "8.8.8.8, 1.1.1.1"

@@ -55,9 +55,20 @@ def test_guard_home_outside_prod(tmp_path):
         cfg.load(environ={"ENV": "dev"}, dotenv_path=path)
 
 
-def test_tst_is_watch_only():
+def test_tst_manages_its_own_record():
     c = cfg.load(environ={"ENV": "tst"})
-    assert c.managed_record is None and c.tls_connect_host == "127.0.0.1"
+    assert (c.managed_record, c.tls_connect_host) == ("home-tst", "127.0.0.1")
+    assert c.watched_hosts == [("home-tst.stanham.com", 443)]
+
+
+def test_tst_can_be_made_watch_only():
+    c = cfg.load(environ={"ENV": "tst", "TST_MANAGED_RECORD": "none"})
+    assert c.managed_record is None
+
+
+def test_guard_home_in_tst():
+    with pytest.raises(cfg.ConfigError, match="single-writer guard"):
+        cfg.load(environ={"ENV": "tst", "TST_MANAGED_RECORD": "home"})
 
 
 def test_unknown_env_rejected():

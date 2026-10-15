@@ -135,9 +135,22 @@ def test_history_capped_at_50_most_recent(tmp_path):
     assert len(ids) == 50 and ids == sorted(set(ids)) and ids[-1] == 60 and ids[0] == 11
 
 
-def test_tst_is_watch_only_no_godaddy_request(tmp_path):
+def test_tst_writes_only_kotwica_tst(tmp_path):
     world = FakeWorld(record=[{"data": "198.51.100.2", "ttl": 600}])
-    config, store, job = make(tmp_path, world, env={"ENV": "tst", "GODADDY_API_TOKEN": ""})
+    config, store, job = make(tmp_path, world, env={"ENV": "tst"})
+    cycle(job)
+    assert config.managed_record == "home-tst"
+    assert [(r.method, r.url.path) for r in world.godaddy] == [
+        ("GET", "/v1/domains/stanham.com/records/A/home-tst"),
+        ("PUT", "/v1/domains/stanham.com/records/A/home-tst"),
+    ]
+
+
+def test_watch_only_makes_no_godaddy_request(tmp_path):
+    world = FakeWorld(record=[{"data": "198.51.100.2", "ttl": 600}])
+    config, store, job = make(
+        tmp_path, world, env={"ENV": "tst", "TST_MANAGED_RECORD": "none", "GODADDY_API_TOKEN": ""}
+    )
     cycle(job)
     assert config.managed_record is None and world.godaddy == []
     assert store.state.public_ip == IP

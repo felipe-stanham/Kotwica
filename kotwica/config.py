@@ -28,7 +28,12 @@ SHARED_DEFAULTS = {
 
 DEFAULTS = {
     "dev": {"managed_record": "kotwica-dev", "tls_connect_host": None, "log_level": "DEBUG"},
-    "tst": {"managed_record": None, "tls_connect_host": "127.0.0.1", "log_level": "WARNING"},
+    "tst": {
+        "managed_record": "home-tst",
+        "watched_hosts": "home-tst.stanham.com:443",
+        "tls_connect_host": "127.0.0.1",
+        "log_level": "WARNING",
+    },
     "prod": {"managed_record": "home", "tls_connect_host": "127.0.0.1", "log_level": "WARNING"},
 }
 
@@ -138,7 +143,7 @@ def load(
         domain=text("DOMAIN", SHARED_DEFAULTS["domain"]),
         managed_record=managed_record,
         ttl=SHARED_DEFAULTS["ttl"],
-        watched_hosts=parse_hosts(text("WATCHED_HOSTS", SHARED_DEFAULTS["watched_hosts"])),
+        watched_hosts=parse_hosts(text("WATCHED_HOSTS", defaults.get("watched_hosts") or SHARED_DEFAULTS["watched_hosts"])),
         resolvers=_split(text("RESOLVERS", ",".join(SHARED_DEFAULTS["resolvers"]))),
         ip_echo_urls=echo_urls,
         tls_connect_host=tls_connect_host,
