@@ -28,7 +28,7 @@ SHARED_DEFAULTS = {
 
 DEFAULTS = {
     "dev": {"managed_record": "kotwica-dev", "tls_connect_host": None, "log_level": "DEBUG"},
-    "tst": {"managed_record": None, "tls_connect_host": "127.0.0.1", "log_level": "WARNING"},
+    "tst": {"managed_record": "kotwica-tst", "tls_connect_host": "127.0.0.1", "log_level": "WARNING"},
     "prod": {"managed_record": "home", "tls_connect_host": "127.0.0.1", "log_level": "WARNING"},
 }
 

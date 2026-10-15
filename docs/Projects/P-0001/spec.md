@@ -28,7 +28,7 @@ Origin pitch: [I-0001](../../Pitches/I-0001.md)
   - Minimum TTL is 600 s.
   - The interim fix is in place: `home` is a hand-set A record (TTL 3600) and the tplinkdns CNAME is gone.
 - **TLS:** Caddy on the Pi is the only ACME client. Kotwica only observes certificates.
-- **Hosts:** runs on the Pi (`homeserver`) in Latarnia prd only, so there is exactly one writer of the Managed Record.
+- **Hosts:** runs on the Pi (`homeserver`) in Latarnia tst and prd. Each environment writes its own Managed Record (tst `kotwica-tst`, prd `home`), so each record has exactly one writer ([T-0001](../../Tasks/T-0001.md)).
 - **Environments:** this repo's convention is `ENV` ∈ `dev` / `tst` / `prod`. Latarnia sends `prd`; the config module maps `prd` → `prod`.
 
 # Proposed Solution (High-Level)
@@ -134,7 +134,8 @@ The 15-minute grace in rows 6 and 10 covers propagation: the GoDaddy minimum TTL
 - **token_from_secret:** process env `GODADDY_API_TOKEN=tokA`, `.env` with `DEV_GODADDY_API_TOKEN=tokB` → `config.godaddy_token == "tokA"`.
 - **token_from_dotenv_prefix:** no `GODADDY_API_TOKEN` in process env, `ENV=dev`, `.env` with `DEV_GODADDY_API_TOKEN=tokB` → `config.godaddy_token == "tokB"`.
 - **guard_home_outside_prod:** `ENV=dev`, `.env` with `DEV_MANAGED_RECORD=home` → startup fails: process exits non-zero and logs `[ERROR]` with text containing `single-writer guard`.
-- **tst_watch_only:** `ENV=tst`, no overrides → `config.managed_record is None`. After one sync cycle, no GoDaddy request was made and health does not match row 3.
+- **tst_manages_own_record:** `ENV=tst`, no overrides → `config.managed_record == "kotwica-tst"`. After one sync cycle, the only GoDaddy requests are GET and PUT on `kotwica-tst`.
+- **tst_watch_only_override:** `ENV=tst`, `TST_MANAGED_RECORD=none`, no token → `config.managed_record is None`. After one sync cycle, no GoDaddy request was made and health does not match row 3.
 - **token_never_logged:** start with `GODADDY_API_TOKEN=gd_pat_SENTINEL123` and run one sync cycle at DEBUG → captured stdout does not contain `SENTINEL123`.
 
 ### cap-003 — Check loop and state store
@@ -295,7 +296,7 @@ sequenceDiagram
 
   | Setting | dev | tst | prod |
   |---|---|---|---|
-  | Managed Record | `kotwica-dev` | *(none, watch-only)* | `home` |
+  | Managed Record | `kotwica-dev` | `kotwica-tst` | `home` |
   | Watched Hosts | `home.stanham.com:443`, `home.stanham.com:8443` | same | same |
   | TLS connect host | *(hostname itself)* | `127.0.0.1` | `127.0.0.1` |
 
@@ -355,7 +356,7 @@ sequenceDiagram
 - Do NOT support DNS providers other than GoDaddy.
 - Do NOT manage or check IPv6 / AAAA records.
 - Do NOT send alerts (email, push, Slack, Redis events). The Latarnia dashboard and `/health` are the only signal.
-- Do NOT run with a Managed Record in more than one environment. Only `prod` may manage `home`; `tst` is watch-only.
+- Do NOT let two environments share a Managed Record. Each environment has its own (`kotwica-dev`, `kotwica-tst`, `home`); only `prod` may manage `home`.
 - Do NOT watch `latarnia-1.stanham.com` in v1 (test-only override in `tls_real_valid` excepted).
 - Do NOT add a database. A JSON state file only.
 - Do NOT serve HTML. Latarnia UI resources only.

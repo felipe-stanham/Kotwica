@@ -30,7 +30,16 @@ Kotwica never creates the Managed Record. Before running the `[int]` tests or a 
 1. Add the token to `/opt/latarnia/prd/secrets.env` as `GODADDY_API_TOKEN='...'` (file mode 600). Latarnia injects it into the process; `ENV=prd` selects the Managed Record `home`.
 2. Install the App under Latarnia prd and start it from the dashboard.
 3. Check Kotwica on the dashboard: `/health` should be `good`. The first Record Update rewrites the `home` TTL from 3600 to 600 and is logged at WARNING.
-4. Only prd manages `home`. tst is watch-only and Kotwica is not deployed there.
+4. Only prd manages `home`. tst runs Kotwica too and manages `kotwica-tst.stanham.com` (see below).
+
+### Tst Managed Record (once)
+
+Latarnia tst on the Pi runs Kotwica against its own record, so the write path is exercised without touching `home`:
+
+1. At GoDaddy, create `kotwica-tst.stanham.com` as an A record, value `192.0.2.1`, TTL 3600.
+2. Add the token to `/opt/latarnia/tst/secrets.env` as `GODADDY_API_TOKEN='...'` (file mode 600). Latarnia sets `ENV=tst`, which selects `kotwica-tst`.
+3. tst keeps watching the `home.stanham.com` hosts (Caddy serves no certificate for `kotwica-tst`). Check `/health` is `good` and the record reads the Public IP with TTL 600.
+4. The single-writer guard still refuses `home` anywhere but prd.
 
 ### Rotating the token
 
@@ -44,7 +53,7 @@ The GoDaddy minimum TTL is 600 s. After a Record Update strict resolvers may ser
 
 - If GoDaddy holds more than one A record under the Managed Record name, Kotwica writes the single correct record over them (one Record Update, possibly with `old_ip == new_ip`).
 - A GoDaddy 404 (for instance `UNKNOWN_DOMAIN`) is reported as `Managed Record ... missing`; the status code is shown in the `status` resource's `last_error`.
-- In watch-only environments (tst) Kotwica still detects the Public IP, so the DNS watch can compare, but never calls GoDaddy.
+- With no Managed Record configured (watch-only, e.g. `TST_MANAGED_RECORD=none`) Kotwica still detects the Public IP, so the DNS watch can compare, but never calls GoDaddy.
 
 ### Checks that only run on the Pi
 
