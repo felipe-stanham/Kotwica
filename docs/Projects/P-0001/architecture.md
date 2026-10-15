@@ -84,7 +84,7 @@ flowchart TB
                 LP["Latarnia platform"]
                 K["Kotwica<br/>port allocated 8150–8199<br/>data: /opt/latarnia/prd/data/kotwica/"]
             end
-            LT["Latarnia tst<br/>Kotwica (manages kotwica-tst)"]
+            LT["Latarnia tst<br/>Kotwica (manages home-tst, watches home-tst:443)"]
             SEC["/opt/latarnia/prd/secrets.env<br/>GODADDY_API_TOKEN (mode 600)"]
         end
     end
@@ -135,7 +135,7 @@ flowchart LR
 |---|---|---|---|
 | Deployed | local `python app.py` | yes | yes |
 | `ENV` source | `.env` / default | Latarnia `ENV=tst` | Latarnia `ENV=prd` → `prod` |
-| Managed Record | `kotwica-dev.stanham.com` | `kotwica-tst.stanham.com` | `home.stanham.com` |
+| Managed Record | `kotwica-dev.stanham.com` | `home-tst.stanham.com` | `home.stanham.com` |
 | TLS connect host | the hostname (public path) | `127.0.0.1` | `127.0.0.1` |
 | Token source | `.env` `DEV_GODADDY_API_TOKEN` | Latarnia Secret `GODADDY_API_TOKEN` | Latarnia Secret `GODADDY_API_TOKEN` |
 | Log level | DEBUG | WARNING | WARNING |

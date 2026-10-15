@@ -30,15 +30,15 @@ Kotwica never creates the Managed Record. Before running the `[int]` tests or a 
 1. Add the token to `/opt/latarnia/prd/secrets.env` as `GODADDY_API_TOKEN='...'` (file mode 600). Latarnia injects it into the process; `ENV=prd` selects the Managed Record `home`.
 2. Install the App under Latarnia prd and start it from the dashboard.
 3. Check Kotwica on the dashboard: `/health` should be `good`. The first Record Update rewrites the `home` TTL from 3600 to 600 and is logged at WARNING.
-4. Only prd manages `home`. tst runs Kotwica too and manages `kotwica-tst.stanham.com` (see below).
+4. Only prd manages `home`. tst runs Kotwica too and manages `home-tst.stanham.com` (see below).
 
 ### Tst Managed Record (once)
 
-Latarnia tst on the Pi runs Kotwica against its own record, so the write path is exercised without touching `home`:
+Latarnia tst on the Pi runs Kotwica against its own record, `home-tst.stanham.com`, the public name of the tst environment (Caddy and Latarnia tst serve it on :443, configured in Latarnia, not here):
 
-1. At GoDaddy, create `kotwica-tst.stanham.com` as an A record, value `192.0.2.1`, TTL 3600.
-2. Add the token to `/opt/latarnia/tst/secrets.env` as `GODADDY_API_TOKEN='...'` (file mode 600). Latarnia sets `ENV=tst`, which selects `kotwica-tst`.
-3. tst keeps watching the `home.stanham.com` hosts (Caddy serves no certificate for `kotwica-tst`). Check `/health` is `good` and the record reads the Public IP with TTL 600.
+1. At GoDaddy, create `home-tst.stanham.com` as an A record with the current Public IP, TTL 3600 (any other record type under that name must not exist). The first sync rewrites the TTL to 600.
+2. Add the token to `/opt/latarnia/tst/secrets.env` as `GODADDY_API_TOKEN='...'` (file mode 600). Latarnia sets `ENV=tst`, which selects `home-tst`.
+3. tst watches `home-tst.stanham.com:443`. Until Caddy serves a certificate for that name on :443, the TLS check reports it `unreachable` or `invalid` and `/health` is `error`; that is expected during the move.
 4. The single-writer guard still refuses `home` anywhere but prd.
 
 ### Rotating the token

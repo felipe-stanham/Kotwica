@@ -14,7 +14,7 @@ Kotwica is a Latarnia Service App that runs on the Raspberry Pi (`homeserver`). 
 ## Architecture Principles
 
 - **Latarnia Service App contract is binding:** Manifest `latarnia.json`, `GET /health`, clean exit 0 on SIGTERM, logs to stdout, no declared port, no routes under `/b/`, no HTML (the platform renders the UI from `/ui` and `/api/*`).
-- **One writer, one record:** Kotwica writes only the Managed Record, only through GET/PUT `/v1/domains/{domain}/records/A/{name}`. Each environment manages its own record (dev `kotwica-dev`, tst `kotwica-tst`, prod `home`); only `ENV=prod` may manage `home` (single-writer guard). It never creates the record.
+- **One writer, one record:** Kotwica writes only the Managed Record, only through GET/PUT `/v1/domains/{domain}/records/A/{name}`. Each environment manages its own record (dev `kotwica-dev`, tst `home-tst`, prod `home`); only `ENV=prod` may manage `home` (single-writer guard). It never creates the record.
 - **Config precedence:** process environment > `.env` (local dev only, never deployed) > committed per-env defaults in `kotwica/config.py`. `prd` maps to `prod`.
 - **External clients are injected** so tests run with fakes. Only `app.py` wires concrete clients. `health.py` is a pure function of `(State, Config, now)`.
 - **Public IP is known only when two echo services agree.** Otherwise no GoDaddy call that cycle. The next cycle is the retry; no in-cycle retries.

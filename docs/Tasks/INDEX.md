@@ -18,7 +18,7 @@ Tasks have a simple lifecycle: Open → Done, or Open → Promoted to Project (i
 
 <!-- Completed tasks. Status: [DONE]. Keep these as the historical record — do not delete. -->
 
-- [T-0001](T-0001.md) — tst manages its own Managed Record (kotwica-tst) — [DONE] — 2026-10-15
+- [T-0001](T-0001.md) — tst manages its own Managed Record (home-tst) — [DONE] — 2026-10-15
 
 ---
 

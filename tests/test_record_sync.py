@@ -139,10 +139,10 @@ def test_tst_writes_only_kotwica_tst(tmp_path):
     world = FakeWorld(record=[{"data": "198.51.100.2", "ttl": 600}])
     config, store, job = make(tmp_path, world, env={"ENV": "tst"})
     cycle(job)
-    assert config.managed_record == "kotwica-tst"
+    assert config.managed_record == "home-tst"
     assert [(r.method, r.url.path) for r in world.godaddy] == [
-        ("GET", "/v1/domains/stanham.com/records/A/kotwica-tst"),
-        ("PUT", "/v1/domains/stanham.com/records/A/kotwica-tst"),
+        ("GET", "/v1/domains/stanham.com/records/A/home-tst"),
+        ("PUT", "/v1/domains/stanham.com/records/A/home-tst"),
     ]
 
 

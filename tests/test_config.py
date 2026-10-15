@@ -57,7 +57,8 @@ def test_guard_home_outside_prod(tmp_path):
 
 def test_tst_manages_its_own_record():
     c = cfg.load(environ={"ENV": "tst"})
-    assert (c.managed_record, c.tls_connect_host) == ("kotwica-tst", "127.0.0.1")
+    assert (c.managed_record, c.tls_connect_host) == ("home-tst", "127.0.0.1")
+    assert c.watched_hosts == [("home-tst.stanham.com", 443)]
 
 
 def test_tst_can_be_made_watch_only():
