@@ -55,4 +55,4 @@ Kotwica is a Latarnia Service App that runs on the Raspberry Pi (`homeserver`). 
 
 ## Current State
 
-P-0001 (Kotwica v1): all four scopes are implemented on `dev`. Scope 3 still needs the real GoDaddy round trip (operator-created dev record and token) before it can be marked done. Not yet deployed.
+P-0001 (Kotwica v1): all four scopes are implemented on `dev`. Scope 3's real GoDaddy round trip passed on 2026-10-15 (`kotwica-dev`); it stays open only for the minimum token scope check. T-0001 (tst manages `home-tst`) is merged. Not yet deployed.
