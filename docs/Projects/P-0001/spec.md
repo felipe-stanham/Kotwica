@@ -181,7 +181,7 @@ The 15-minute grace in rows 6 and 10 covers propagation: the GoDaddy minimum TTL
 - **tls_invalid:** the handshake raises a certificate verify error (`certificate has expired`) → cert `invalid`, reason contains `expired`, `/health` = `error`.
 - **tls_unreachable:** connection refused → cert `unreachable`, `/health` = `error`.
 - **tls_sni_and_target:** `tls_connect_host=127.0.0.1`, Watched Host `home.stanham.com:8443` → the TCP connect goes to `127.0.0.1:8443` and the TLS `server_hostname == "home.stanham.com"`.
-- **[int] tls_real_valid:** `ENV=dev`, Watched Host `latarnia-1.stanham.com:443`, `tls_connect_host` unset → cert `valid`, `days_left > 0`. This is a test-only override; `latarnia-1` is not a v1 Watched Host.
+- **[int] tls_real_valid:** `ENV=dev`, Watched Host `sha256.badssl.com:443`, `tls_connect_host` unset → cert `valid`, `days_left > 0`. This is a test-only override; `sha256.badssl.com` is not a v1 Watched Host. ([T-0004](../../Tasks/T-0004.md): it replaced `latarnia-1.stanham.com`, which was retired.)
 - **[int] tls_real_expired:** `ENV=dev`, Watched Host `expired.badssl.com:443` → cert `invalid`, reason contains `expired`.
 
 ### cap-008 — Health aggregation
@@ -358,7 +358,7 @@ sequenceDiagram
 - Do NOT manage or check IPv6 / AAAA records.
 - Do NOT send alerts (email, push, Slack, Redis events). The Latarnia dashboard and `/health` are the only signal.
 - Do NOT let two environments share a Managed Record. Each environment has its own (`kotwica-dev`, `home-tst`, `home`); only `prod` may manage `home`.
-- Do NOT watch `latarnia-1.stanham.com` in v1 (test-only override in `tls_real_valid` excepted).
+- Do NOT watch any host other than the configured Watched Hosts in v1 (the test-only host in `tls_real_valid` excepted).
 - Do NOT add a database. A JSON state file only.
 - Do NOT serve HTML. Latarnia UI resources only.
 - Do NOT log the token or full API responses.
