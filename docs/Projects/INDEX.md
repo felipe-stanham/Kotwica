@@ -12,10 +12,11 @@ Status values: `[ ] Not Started`, `[IN PROGRESS]`, `[DONE]`.
 
 <!-- Projects currently being implemented. -->
 
-- [P-0001](P-0001.md) — Kotwica: Home DDNS + Cert Watch — [IN PROGRESS] — 2026-10-08
 
 ---
 
 ## Completed
 
 <!-- Projects where the final scope is marked [DONE]. -->
+
+- [P-0001](P-0001.md) — Kotwica: Home DDNS + Cert Watch — [DONE] — 2026-10-08 (deployed to tst and prd 2026-10-16)
