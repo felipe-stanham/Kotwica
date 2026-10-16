@@ -7,9 +7,12 @@ from kotwica.state import StateStore
 from tests.fixtures import NOW, PUBLIC_IP, make_config
 from tests.test_tls_watch import cert_expiring_in
 
+# The prod default is a single host now; these tests exercise several hosts sharing one hostname.
+TWO_PORTS = {"PROD_WATCHED_HOSTS": "home.stanham.com:443,home.stanham.com:8443"}
+
 
 def run_job(tmp_path, public_ip, answers, cert):
-    config = make_config()
+    config = make_config(**TWO_PORTS)
     store = StateStore(tmp_path / "state.json")
     store.state.public_ip, store.state.last_sync_at = public_ip, NOW
     store.state.reconcile_hosts(config.watched_hosts)
@@ -39,7 +42,7 @@ def test_watch_job_without_public_ip_leaves_dns_unknown(tmp_path):
 
 
 def test_one_failing_host_does_not_sink_the_cycle(tmp_path):
-    config = make_config()
+    config = make_config(**TWO_PORTS)
     store = StateStore(tmp_path / "state.json")
     store.state.public_ip = PUBLIC_IP
     store.state.reconcile_hosts(config.watched_hosts)

@@ -135,6 +135,7 @@ The 15-minute grace in rows 6 and 10 covers propagation: the GoDaddy minimum TTL
 - **token_from_dotenv_prefix:** no `GODADDY_API_TOKEN` in process env, `ENV=dev`, `.env` with `DEV_GODADDY_API_TOKEN=tokB` → `config.godaddy_token == "tokB"`.
 - **guard_home_outside_prod:** `ENV=dev`, `.env` with `DEV_MANAGED_RECORD=home` → startup fails: process exits non-zero and logs `[ERROR]` with text containing `single-writer guard`.
 - **tst_manages_own_record:** `ENV=tst`, no overrides → `config.managed_record == "home-tst"` and `config.watched_hosts == [("home-tst.stanham.com", 443)]`. After one sync cycle, the only GoDaddy requests are GET and PUT on `home-tst`.
+- **prd_watches_443_only:** `ENV=prd`, no overrides → `config.watched_hosts == [("home.stanham.com", 443)]`.
 - **tst_watch_only_override:** `ENV=tst`, `TST_MANAGED_RECORD=none`, no token → `config.managed_record is None`. After one sync cycle, no GoDaddy request was made and health does not match row 3.
 - **token_never_logged:** start with `GODADDY_API_TOKEN=gd_pat_SENTINEL123` and run one sync cycle at DEBUG → captured stdout does not contain `SENTINEL123`.
 
@@ -297,7 +298,7 @@ sequenceDiagram
   | Setting | dev | tst | prod |
   |---|---|---|---|
   | Managed Record | `kotwica-dev` | `home-tst` | `home` |
-  | Watched Hosts | `home.stanham.com:443`, `home.stanham.com:8443` | `home-tst.stanham.com:443` | `home.stanham.com:443`, `home.stanham.com:8443` |
+  | Watched Hosts | `home.stanham.com:443`, `home.stanham.com:8443` | `home-tst.stanham.com:443` | `home.stanham.com:443` |
   | TLS connect host | *(hostname itself)* | `127.0.0.1` | `127.0.0.1` |
 
   Shared defaults:
@@ -344,7 +345,7 @@ sequenceDiagram
 **IN scope**
 - One Service App, Kotwica, deployed to Latarnia prd on the Pi.
 - Keeping one Managed Record (`home.stanham.com` A, TTL 600) equal to the Public IP via the GoDaddy API.
-- DNS and TLS checks for the Watched Hosts `home.stanham.com:443` and `home.stanham.com:8443`.
+- DNS and TLS checks for the Watched Hosts: prd `home.stanham.com:443`, tst `home-tst.stanham.com:443` ([T-0001](../../Tasks/T-0001.md), [T-0002](../../Tasks/T-0002.md)). dev keeps `home.stanham.com:443` and `:8443` as a two-ports-one-hostname default.
 - Health Check with the Health Rules above.
 - Latarnia-rendered UI resources: `status`, `hosts`, `updates`.
 - `GODADDY_API_TOKEN` as a Latarnia Secret.

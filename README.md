@@ -1,6 +1,6 @@
 # Kotwica
 
-Home DDNS and certificate watch. A Latarnia Service App that keeps the Managed Record `home.stanham.com` (A, TTL 600) equal to the home Public IP through the GoDaddy API, and watches DNS and TLS certificates of the Watched Hosts `home.stanham.com:443` and `:8443`. Status shows up on the Latarnia dashboard (`/health`) and in Kotwica's UI resources (`status`, `hosts`, `updates`).
+Home DDNS and certificate watch. A Latarnia Service App that keeps the Managed Record `home.stanham.com` (A, TTL 600) equal to the home Public IP through the GoDaddy API, and watches DNS and TLS certificates of the Watched Host `home.stanham.com:443` (tst watches `home-tst.stanham.com:443`). Status shows up on the Latarnia dashboard (`/health`) and in Kotwica's UI resources (`status`, `hosts`, `updates`).
 
 Spec and design: `docs/Projects/P-0001.md` and `docs/Projects/P-0001/`. System overview: `docs/SYSTEM.md`.
 
