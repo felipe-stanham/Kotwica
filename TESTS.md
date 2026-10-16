@@ -43,6 +43,7 @@ The `tester` agent caches generated scripts under `tests/cache/<test_name>.<ext>
 - **env_prd_maps_to_prod:** Load config with process env `ENV=prd` and no `.env` → `env == "prod"`, `managed_record == "home"`, `tls_connect_host == "127.0.0.1"`.
 - **guard_home_outside_prod:** Load config with `ENV=dev` and `.env` containing `DEV_MANAGED_RECORD=home` → startup fails with a message containing `single-writer guard`; same with `ENV=tst` and `TST_MANAGED_RECORD=home`.
 - **tst_manages_own_record:** Load config with `ENV=tst` and no overrides → `managed_record == "home-tst"`, `watched_hosts == [("home-tst.stanham.com", 443)]`, `tls_connect_host == "127.0.0.1"`.
+- **prd_watches_443_only:** Load config with process env `ENV=prd` and no `.env` → `watched_hosts == [("home.stanham.com", 443)]`.
 - **token_never_logged:** Start with `GODADDY_API_TOKEN=gd_pat_SENTINEL123` at DEBUG and run one sync cycle → captured stdout and stderr do not contain `SENTINEL123`.
 
 ### Health and UI (P-0001 Scope 2)

@@ -34,7 +34,12 @@ DEFAULTS = {
         "tls_connect_host": "127.0.0.1",
         "log_level": "WARNING",
     },
-    "prod": {"managed_record": "home", "tls_connect_host": "127.0.0.1", "log_level": "WARNING"},
+    "prod": {
+        "managed_record": "home",
+        "watched_hosts": "home.stanham.com:443",
+        "tls_connect_host": "127.0.0.1",
+        "log_level": "WARNING",
+    },
 }
 
 

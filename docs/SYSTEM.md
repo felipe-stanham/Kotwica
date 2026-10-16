@@ -2,7 +2,7 @@
 
 ## What This System Does
 
-Kotwica is a Latarnia Service App that runs on the Raspberry Pi (`homeserver`). It keeps one DNS A record, the Managed Record `home.stanham.com`, equal to the home Public IP through the GoDaddy API. It also watches the Watched Hosts (`home.stanham.com:443` and `:8443`): DNS must resolve to the expected IP through public resolvers, and the TLS certificate served by Caddy must be valid and not near expiry. State is exposed through the Latarnia Health Check (`/health`) and Latarnia-rendered UI resources (`/ui`, `/api/*`).
+Kotwica is a Latarnia Service App that runs on the Raspberry Pi (`homeserver`). It keeps one DNS A record, the Managed Record `home.stanham.com`, equal to the home Public IP through the GoDaddy API. It also watches the Watched Host (prd `home.stanham.com:443`, tst `home-tst.stanham.com:443`): DNS must resolve to the expected IP through public resolvers, and the TLS certificate served by Caddy must be valid and not near expiry. State is exposed through the Latarnia Health Check (`/health`) and Latarnia-rendered UI resources (`/ui`, `/api/*`).
 
 ## Stack
 

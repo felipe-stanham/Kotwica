@@ -39,6 +39,11 @@ def test_default_watched_hosts_share_hostname():
     assert c.watched_hosts == [("home.stanham.com", 443), ("home.stanham.com", 8443)]
 
 
+def test_prod_watches_only_443():
+    c = cfg.load(environ={"ENV": "prd"})
+    assert c.watched_hosts == [("home.stanham.com", 443)]
+
+
 def test_token_from_secret_wins(tmp_path):
     path = write_env(tmp_path, "DEV_GODADDY_API_TOKEN=tokB\n")
     assert cfg.load(environ={"ENV": "dev", "GODADDY_API_TOKEN": "tokA"}, dotenv_path=path).godaddy_token == "tokA"
