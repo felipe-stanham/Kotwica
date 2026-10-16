@@ -55,4 +55,4 @@ Kotwica is a Latarnia Service App that runs on the Raspberry Pi (`homeserver`). 
 
 ## Current State
 
-P-0001 (Kotwica v1) is done and deployed on the Pi (2026-10-16): tst (`home-tst`, port 8100) and prd (`home`, port 8150). T-0001 (tst manages `home-tst`) and T-0002 (prd watches `:443` only) are merged. The GoDaddy token has full Domains & DNS scope; the minimum-scope check was waived. Open follow-ups: the SIGTERM-timeout test (own task) and a new target for the `[int] tls_real_valid` test (`latarnia-1.stanham.com` was retired). See `DEPLOYMENTS.md`.
+P-0001 (Kotwica v1) is done and deployed on the Pi (2026-10-16): tst (`home-tst`, port 8100) and prd (`home`, port 8150). T-0001 (tst manages `home-tst`) and T-0002 (prd watches `:443` only) are merged. The GoDaddy token has full Domains & DNS scope; the minimum-scope check was waived. The SIGTERM-timeout test is fixed (T-0003) and the `[int] tls_real_valid` target was moved off the retired `latarnia-1.stanham.com` (T-0004). See `DEPLOYMENTS.md`.

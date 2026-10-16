@@ -145,7 +145,7 @@ def test_real_server_that_resets_without_handshake_classifies_cleanly():
 
 @pytest.mark.integration
 def test_int_tls_real_valid():
-    result = check_tls("latarnia-1.stanham.com", 443, None, time.time())
+    result = check_tls("sha256.badssl.com", 443, None, time.time())
     assert result.status == "valid" and result.days_left > 0, result
 
 
