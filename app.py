@@ -2,6 +2,7 @@
 import argparse
 import asyncio
 import logging
+import os
 import signal
 import sys
 import time
@@ -114,8 +115,16 @@ def main(argv=None) -> int:
     # uvicorn re-raises a captured SIGTERM after its graceful shutdown; with the default handler
     # that would kill the process with -15 instead of exit code 0.
     signal.signal(signal.SIGTERM, lambda *_: None)
-    uvicorn.run(app, host=args.host, port=config.port, log_config=None, access_log=False)
-    return 0
+    server = uvicorn.Server(
+        uvicorn.Config(app, host=args.host, port=config.port, log_config=None, access_log=False)
+    )
+    asyncio.new_event_loop().run_until_complete(server.serve())
+    # DNS and TLS checks run in executor threads that cannot be cancelled (socket timeouts up to 10 s).
+    # asyncio.run and interpreter exit would both join them and delay the exit past the stop timeout,
+    # so after the graceful shutdown leave without joining (main therefore never returns 0; only errors return).
+    logging.shutdown()
+    sys.stdout.flush()
+    os._exit(0)
 
 
 if __name__ == "__main__":

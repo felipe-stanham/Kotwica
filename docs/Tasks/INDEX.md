@@ -18,6 +18,8 @@ Tasks have a simple lifecycle: Open → Done, or Open → Promoted to Project (i
 
 <!-- Completed tasks. Status: [DONE]. Keep these as the historical record — do not delete. -->
 
+- [T-0003](T-0003.md) — SIGTERM exits within 5 s even mid-cycle — [DONE] — 2026-10-16
+
 - [T-0002](T-0002.md) — prd watches home.stanham.com:443 only — [DONE] — 2026-10-16
 
 - [T-0001](T-0001.md) — tst manages its own Managed Record (home-tst) — [DONE] — 2026-10-15
