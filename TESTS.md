@@ -29,7 +29,6 @@ The `tester` agent caches generated scripts under `tests/cache/<test_name>.<ext>
 - Always `ENV=dev`. Never run with `ENV=prod`/`prd` on the Mac. Entries that start the real process use `DEV_MANAGED_RECORD=none` so no request reaches GoDaddy, unless the entry says `[int]`.
 - Entries marked `[int]` use the real network and, for the record roundtrip, the dev token in `.env` and the operator-created `kotwica-dev.stanham.com`. They write only `kotwica-dev`.
 - The repo's pytest suite (`.venv/bin/python -m pytest -m "not integration"`) already implements these entries with injected fakes; the `tester` agent may call it, but must report each entry by name.
-- Known failure, pre-existing and unrelated: `tests/test_app_process.py::test_token_never_logged_at_debug` times out on SIGTERM (see `MEMORY.md`). Report it, do not count it as a regression of the change under test.
 
 ---
 
